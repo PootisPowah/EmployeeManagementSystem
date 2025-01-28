@@ -35,13 +35,15 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final EntityManager entityManager;
     private final DtoImpl dtoService;
     private final ModelMapper modelMapper;
+    private final DtoImpl dtoImpl;
 
-    public EmployeeServiceImpl(EmployeeRepository employeeRepository, DepartmentService departmentService, EntityManager entityManager, DtoImpl dtoService, ModelMapper modelMapper) {
+    public EmployeeServiceImpl(EmployeeRepository employeeRepository, DepartmentService departmentService, EntityManager entityManager, DtoImpl dtoService, ModelMapper modelMapper, DtoImpl dtoImpl) {
         this.employeeRepository = employeeRepository;
         this.departmentService = departmentService;
         this.entityManager = entityManager;
         this.dtoService = dtoService;
         this.modelMapper = modelMapper;
+        this.dtoImpl = dtoImpl;
     }
 
     @Override
@@ -74,16 +76,16 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public EmployeeDto addEmployee(Employee employee) {
+    public EmployeeDtoClass addEmployee(Employee employee) {
 
         Employee employeeDto = employeeRepository.save(employee);
-        return convertToDto(employeeDto);
+        return modelMapper.map(employeeDto, EmployeeDtoClass.class);
     }
 
     @Override
-    public EmployeeDto updateEmployee(Employee employee) {
+    public EmployeeDtoClass updateEmployee(Employee employee) {
         Employee employeeDto = employeeRepository.save(employee);
-        return convertToDto(employeeDto);
+        return modelMapper.map(employeeDto, EmployeeDtoClass.class);
     }
 
     @Override
@@ -115,7 +117,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         Example<Employee> example = Example.of(employee);
 
         Optional<Employee> employeeOptional = employeeRepository.findOne(example);
-        return employeeOptional.map(this::convertToDto);
+        //???
+        return employeeOptional.map(dtoImpl::convertToDto);
     }
 
     //final
@@ -181,22 +184,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         query.where(predicates.toArray(new Predicate[0]));
         return entityManager.createQuery(query).getResultList();
     }
-    //postman offline
-    //add in separate service
-    //mapstruct, model mapper
-    //global exception handler
-    public  EmployeeDto convertToDto(Employee employee){
-        DepartmentDtoGet departmentDto = departmentService.convertToDto(employee.getDepartment());
-        return new EmployeeDto(
-                employee.getId(),
-                employee.getFirstName(),
-                employee.getLastName(),
-                employee.getEmail(),
-                employee.getGender(),
-                employee.getPhone(),
-                employee.getSalary(),
-                departmentDto,
-                employee.getRole());
 
-    }
+
 }

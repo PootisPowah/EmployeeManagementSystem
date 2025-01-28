@@ -47,31 +47,31 @@ public class EmployeeController {
     }
 
     @PostMapping
-    public ResponseEntity<EmployeeDto> createEmployee(@RequestBody Employee employee){
-        EmployeeDto createdEmployee = employeeService.addEmployee(employee);
+    public ResponseEntity<EmployeeDtoClass> createEmployee(@RequestBody Employee employee){
+        EmployeeDtoClass createdEmployee = employeeService.addEmployee(employee);
         return new ResponseEntity<>(createdEmployee, HttpStatus.CREATED);
     }
 
-//    @PutMapping("/{id}")
-//    public ResponseEntity<EmployeeDto> updateEmployee(@PathVariable long id, @RequestBody Employee employee){
-//        EmployeeDto existingEmployee = employeeService.getEmployeeById(id);
-//        if(existingEmployee == null){
-//            return ResponseEntity.notFound().build();
-//        }
-//        employee.setId(id);
-//        EmployeeDto updatedEmployee = employeeService.updateEmployee(employee);
-//        return ResponseEntity.ok(updatedEmployee);
-//    }
-//
-//    @DeleteMapping("/{id}")
-//    public ResponseEntity<EmployeeDto> deleteEmployee(@PathVariable long id){
-//        EmployeeDto employee = employeeService.getEmployeeById(id);
-//        if(employee == null){
-//            return ResponseEntity.notFound().build();
-//        }
-//        employeeService.deleteEmployee(id);
-//        return ResponseEntity.noContent().build();
-//    }
+    @PutMapping("/{id}")
+    public ResponseEntity<EmployeeDtoClass> updateEmployee(@PathVariable long id, @RequestBody Employee employee){
+        EmployeeDtoClass existingEmployee = employeeService.getEmployeeById(id);
+        if(existingEmployee == null){
+            return ResponseEntity.notFound().build();
+        }
+        employee.setId(id);
+        EmployeeDtoClass updatedEmployee = employeeService.updateEmployee(employee);
+        return ResponseEntity.ok(updatedEmployee);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<EmployeeDtoClass> deleteEmployee(@PathVariable long id){
+        EmployeeDtoClass employee = employeeService.getEmployeeById(id);
+        if(employee == null){
+            return ResponseEntity.notFound().build();
+        }
+        employeeService.deleteEmployee(id);
+        return ResponseEntity.noContent().build();
+    }
 
     @GetMapping("/by-name/{name}")
     public ResponseEntity<List<EmployeeDto>> getEmployeeByDepartmentName(@PathVariable String name){

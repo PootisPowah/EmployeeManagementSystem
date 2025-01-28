@@ -2,6 +2,7 @@ package com.practice.Employee.Management2.controller;
 
 import com.practice.Employee.Management2.dto.DepartmentDto;
 import com.practice.Employee.Management2.dto.DepartmentDtoGet;
+import com.practice.Employee.Management2.dtoClass.DepartmentDtoGetClass;
 import com.practice.Employee.Management2.entity.Department;
 import com.practice.Employee.Management2.service.DepartmentService;
 import org.springframework.http.HttpStatus;
@@ -21,8 +22,8 @@ public class DepartmentController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<DepartmentDtoGet> getDepartmentById(@PathVariable int id) {
-        DepartmentDtoGet department = departmentService.getDepartmentById(id);
+    public ResponseEntity<DepartmentDtoGetClass> getDepartmentById(@PathVariable int id) {
+        DepartmentDtoGetClass department = departmentService.getDepartmentById(id);
        if (department == null) {
            return ResponseEntity.notFound().build();
        }
@@ -30,8 +31,8 @@ public class DepartmentController {
     }
 
     @GetMapping
-    public ResponseEntity<List<DepartmentDtoGet>> getAllDepartments(){
-        List<DepartmentDtoGet> department = departmentService.getAllDepartments();
+    public ResponseEntity<List<DepartmentDtoGetClass>> getAllDepartments(){
+        List<DepartmentDtoGetClass> department = departmentService.getAllDepartments();
 
         if(department == null){
             return ResponseEntity.notFound().build();
@@ -40,21 +41,24 @@ public class DepartmentController {
     }
 
     @PostMapping
-    public ResponseEntity<DepartmentDtoGet> createDepartment(@RequestBody DepartmentDto departmentDto){
-        DepartmentDtoGet createdDepartment = departmentService.addDepartment(departmentDto);
+    public ResponseEntity<DepartmentDtoGetClass> createDepartment(@RequestBody DepartmentDto departmentDto){
+        DepartmentDtoGetClass createdDepartment = departmentService.addDepartment(departmentDto);
         return new ResponseEntity<>(createdDepartment, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<DepartmentDtoGet> updateDepartment(@PathVariable long id, @RequestBody DepartmentDto departmentDto){
+    public ResponseEntity<DepartmentDtoGetClass> updateDepartment(@PathVariable long id, @RequestBody DepartmentDto departmentDto){
 
-        DepartmentDtoGet updatedDepartment = departmentService.updateDepartment(departmentDto,id);
+        DepartmentDtoGetClass updatedDepartment = departmentService.updateDepartment(departmentDto,id);
         return ResponseEntity.ok(updatedDepartment);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Department> deleteDepartment(@PathVariable long id){
-
+    public ResponseEntity<DepartmentDtoGetClass> deleteDepartment(@PathVariable long id){
+        DepartmentDtoGetClass department = departmentService.getDepartmentById(id);
+        if(department == null){
+            return ResponseEntity.notFound().build();
+        }
         departmentService.deleteDepartment(id);
         return ResponseEntity.noContent().build();
     }

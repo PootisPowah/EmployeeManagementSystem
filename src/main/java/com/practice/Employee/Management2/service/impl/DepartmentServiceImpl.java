@@ -2,12 +2,15 @@ package com.practice.Employee.Management2.service.impl;
 
 import com.practice.Employee.Management2.dto.DepartmentDto;
 import com.practice.Employee.Management2.dto.DepartmentDtoGet;
+import com.practice.Employee.Management2.dtoClass.DepartmentDtoGetClass;
 import com.practice.Employee.Management2.entity.Department;
 import com.practice.Employee.Management2.entity.Employee;
 import com.practice.Employee.Management2.exception.ResourceNotFoundException;
 import com.practice.Employee.Management2.repository.DepartmentRepository;
 import com.practice.Employee.Management2.repository.EmployeeRepository;
 import com.practice.Employee.Management2.service.DepartmentService;
+import com.practice.Employee.Management2.service.dto.DtoImpl;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,28 +21,30 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     private final DepartmentRepository departmentRepository;
     private final EmployeeRepository employeeRepository;
+    private final ModelMapper modelMapper;
 
-    public DepartmentServiceImpl(DepartmentRepository departmentRepository,EmployeeRepository employeeRepository) {
+    public DepartmentServiceImpl(DepartmentRepository departmentRepository, EmployeeRepository employeeRepository, DtoImpl dtoImpl, ModelMapper modelMapper) {
         this.departmentRepository = departmentRepository;
         this.employeeRepository = employeeRepository;
+        this.modelMapper = modelMapper;
     }
 
     @Override
-    public DepartmentDtoGet getDepartmentById(long id) {
+    public DepartmentDtoGetClass getDepartmentById(long id) {
         Department department = departmentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Department with id " + id + " not found"));
-        return convertToDto(department);
+        return modelMapper.map(department,DepartmentDtoGetClass.class);
     }
 
     @Override
-    public List<DepartmentDtoGet> getAllDepartments() {
+    public List<DepartmentDtoGetClass> getAllDepartments() {
         List<Department> departments = departmentRepository.findAll();
         return departments.stream()
-                .map(this::convertToDto)
+                .map(list -> modelMapper.map(list, DepartmentDtoGetClass.class))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public DepartmentDtoGet addDepartment(DepartmentDto departmentDto) {
+    public DepartmentDtoGetClass addDepartment(DepartmentDto departmentDto) {
 
         Department department = new Department();
         department.setDepartmentName(departmentDto.departmentName());
@@ -52,32 +57,29 @@ public class DepartmentServiceImpl implements DepartmentService {
             department.setManager(null);
         }
         Department newDepartment = departmentRepository.save(department);
-        return convertToDto(newDepartment);
+        return modelMapper.map(newDepartment, DepartmentDtoGetClass.class);
     }
 
     @Override
-    public DepartmentDtoGet updateDepartment(DepartmentDto departmentDto, long id) {
+    public DepartmentDtoGetClass updateDepartment(DepartmentDto departmentDto, long id) {
         Department department = departmentRepository.findById(id).orElseThrow(() -> new RuntimeException("Department not found"));
 
         department.setDepartmentName(departmentDto.departmentName());
         Employee manager = employeeRepository.findById(departmentDto.managerId()).orElseThrow(() -> new RuntimeException("Manager not found"));
         department.setManager(manager);
         Department updatedDepartment = departmentRepository.save(department);
-        return convertToDto(updatedDepartment);
+        return modelMapper.map(updatedDepartment, DepartmentDtoGetClass.class);
+
     }
 
     @Override
     public void deleteDepartment(long id) {
+        if(!departmentRepository.existsById(id)) {
+            throw new RuntimeException("Department with id" + id + " not found");
+        }
         departmentRepository.deleteById(id);
     }
 
-    public  DepartmentDtoGet convertToDto(Department department) {
-       return new DepartmentDtoGet(
-               department.getId(),
-               department.getDepartmentName(),
-               department.getManager()!= null ? department.getManager().getId() : 0);
 
-
-    }
 
 }

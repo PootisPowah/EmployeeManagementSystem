@@ -9,14 +9,10 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class DtoImpl {
-    private final DepartmentService departmentService;
 
-    public DtoImpl(DepartmentService departmentService) {
-        this.departmentService = departmentService;
-    }
 
     public EmployeeDto convertToDto(Employee employee){
-        DepartmentDtoGet departmentDto = departmentService.convertToDto(employee.getDepartment());
+        DepartmentDtoGet departmentDto = convertToDto(employee.getDepartment());
         return new EmployeeDto(
                 employee.getId(),
                 employee.getFirstName(),

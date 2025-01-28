@@ -12,8 +12,8 @@ import java.util.Optional;
 public interface EmployeeService {
     EmployeeDtoClass getEmployeeById(long id);
     EmployeePaginationResponseClass getAllEmployees(int pageNo, int pageSize, String sortProperty);
-    EmployeeDto addEmployee(Employee employee);
-    EmployeeDto updateEmployee(Employee employee);
+    EmployeeDtoClass addEmployee(Employee employee);
+    EmployeeDtoClass updateEmployee(Employee employee);
     void deleteEmployee(long id);
 
     List<EmployeeDto> getEmployeesByDepartmentName(String departmentName);

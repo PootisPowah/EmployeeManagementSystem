@@ -13,4 +13,6 @@ public class DepartmentDtoGet{
         private long id;
         private String departmentName;
         private Long managerId;
+
+        
 }
